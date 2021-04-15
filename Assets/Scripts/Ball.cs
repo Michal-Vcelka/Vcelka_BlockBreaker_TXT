@@ -44,6 +44,7 @@ public class Ball : MonoBehaviour
         {
             myRigidBody2D.velocity = new Vector2(xPush, yPush);
             hasStarted = true;
+            
         } 
     }
 

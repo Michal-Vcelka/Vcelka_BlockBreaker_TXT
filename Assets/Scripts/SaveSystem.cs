@@ -3,41 +3,59 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using UnityEngine.UI;
 
 public class SaveSystem : MonoBehaviour
 {
-    string currentName = "michal";
-    string currentScore = "0";
-    string currentLevel = "Level_1";
+    [SerializeField] Player player;
+    [SerializeField] string currentName = "";
+    [SerializeField] string currentScore = "";
+    [SerializeField] string currentLevel = "";
+    //v kode maju pridane [SerializeField] skrz ktoré som kontroloval funkcnost
 
-    void Start()
+    /*void Start()
     {
         SaveFile();
-        //LoadFile();
-    }
+        LoadFile();
+    }*/
 
     public void SaveFile()
     {
+        //destination je nasa cesta k txt suboru, v mojom pripade == C:\Users\micha\AppData\LocalLow\DefaultCompany\BlockBreaker
         string destination = Application.persistentDataPath + "/save.txt";
         FileStream file;
-
-        Debug.Log("otvorene");
-        Debug.Log(Application.persistentDataPath);
-
+        //otvorenie existujuceho suboru, ak doteraz neexistoval tak sa vytvori
         if (File.Exists(destination)) file = File.OpenWrite(destination);
+       
         else file = File.Create(destination);
 
-        GameData data = new GameData(currentName, currentScore, currentLevel);
+        //prepojenie na Player.cs, zapisujeme data ktore su momentalne aktualne v Player
+        //Player data = new Player(currentName, currentScore, currentLevel);
+        currentName = player.PlayerName;
+        currentScore = player.PlayerScore;
+        currentLevel = player.PlayerLevel;
+        //otvorenie StreamWriteru a napojenie na subor vyssie
         StreamWriter writer = new StreamWriter(file);
-        writer.WriteLine(data);
+        //zapis dat do suboru s odsekmi - 1 udaj = 1 riadok
+        writer.WriteLine(currentName + "\n" + currentScore + "\n" + currentLevel);
+        //zatvorenie streamWriteru
+        writer.Close();
+
+        //kontrolny vypis ukladanych udajov do konzoly
+        Debug.Log("ulozene meno je " + currentName);
+        Debug.Log("ulozene skore je " + currentScore);
+        Debug.Log("ulozeny level je " + currentLevel);
+        
         file.Close();
+        //súbor treba zavriet
     }
-    /*
+
     public void LoadFile()
     {
         string destination = Application.persistentDataPath + "/save.txt";
         FileStream file;
 
+        //otvorenie suboru, a osetrenie pre pripad, ze súbor tam neni
         if (File.Exists(destination)) file = File.OpenRead(destination);
         else
         {
@@ -46,16 +64,25 @@ public class SaveSystem : MonoBehaviour
         }
 
         StreamReader reader = new StreamReader(file);
-        GameData data = (GameData)reader.ReadToEnd();
+
+        // GameData data = (GameData)reader.ReadToEnd();
+        //precitanie novych dat a ich zapis do hry
+        player.PlayerName = reader.ReadLine();
+        player.PlayerScore = reader.ReadLine();
+        player.PlayerLevel = reader.ReadLine();
+        //nastavenie novych dat
+        currentName = player.PlayerName;
+        currentScore = player.PlayerScore;
+        currentLevel = player.PlayerLevel;
+        //kontrolny vypis
+        Debug.Log(player.PlayerName);
+        Debug.Log(player.PlayerScore);
+        Debug.Log(player.PlayerLevel);
+        //zatvorenie a ukoncenie
+        reader.Close();
         file.Close();
 
-        currentName = data.playerName;
-        currentScore = data.playerScore;
-        currentLevel = data.playerLevel;
-
-        Debug.Log(data.playerName);
-        Debug.Log(data.playerScore);
-        Debug.Log(data.playerLevel);
     }
-    */
+
 }
+
